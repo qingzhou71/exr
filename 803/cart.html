@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="js/vue.js"></script>
+    <script src="js/vue-resource.js"></script>
+    <style>
+        .spanstyle{
+            display: inline-block;
+            border: 1px solid black;
+            width: 100px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+        }
+        .spanstyle input{
+            width: 90px;
+            text-align: center;
+            border-style: none;
+            outline: none;
+        }
+        .app{width: 1400px;height: auto;position: relative;  }
+        .ull{list-style: none;width: 730px;}
+        .ku{position:fixed;width: 500px;margin-right: 100px;height: auto;border: 1px solid black;top:0px;right: 0px;}
+        .warn{font-size: 19px;font-weight: bold;margin-left: 20px;}
+        .list{display: inline-block;padding: 5px 15px;border: 1px solid black;margin: 7px 15px;box-shadow: 5px 2px 10px;}
+        .list:hover{cursor: pointer;}
+        .lii{width: 130px;}
+    </style>
+</head>
+<body>
+<div class="app">
+    <ul class="ull">
+        <li v-for="(item,index) in books">
+           <span :class="{spanstyle:true}">{{item.id}}</span>
+           <span :class="{spanstyle:true}" class="lii">{{item.name}}</span>
+           <span :class="{spanstyle:true}">{{item.price}}</span>
+           <span :class="{spanstyle:true}"><input type="text" @keyup="changevalue(index)" v-model="item.num"/></span>
+            <span :class="{spanstyle:true}">{{item.totle}}</span>
+           <span :class="{spanstyle:true}"><button @click="btnclick(index)">删除</button></span>
+        </li>
+    </ul>
+    <div class="ku">
+        <p class="warn">挑选几本喜欢的书吧！</p>
+
+                <span class="list" v-for="(item,index) in booku" @click="selectclick(index)">{{item.name}}</span>
+
+
+    </div>
+</div>
+
+<script>
+    new Vue({
+        el:".app",
+        created:function(){
+            this.selectData;
+            this.collect;
+        },
+        data:{
+            books:null,
+            book:{},
+            booku:null,
+            col:null
+        },
+        methods:{
+            btnclick:function (index){
+                var i=this.books[index].id;
+                this.books.splice(index,1);
+                col[i-5].totle=col[i-5].price;
+                col[i-5].num=1;
+
+
+            },
+            changevalue: function (index) {
+                this.books[index].totle=this.books[index].price*this.books[index].num;
+            },
+            selectclick:function(index){
+                for(i=0;i<this.books.length;i++){
+                    if(this.books[i].name==col[index].name){
+                        this.books[i].num=this.books[i].num*1+1;
+                        this.books[i].totle=this.books[i].price*this.books[i].num;
+                        return;
+                    }
+
+                }
+                this.books.push(col[index]);
+            }
+        },
+        computed:{
+            selectData:function (){
+                this.$http.post("./data/data.txt").then(function (res){
+                    this.books=eval(res.data);
+                });
+            },
+            collect:function(){
+                this.$http.post("./data/ku.txt").then(function (res){
+                    this.booku=eval(res.data);
+                    col=eval(res.data);
+                });
+            }
+        }
+    });
+
+</script>
+</body>
+</html>
